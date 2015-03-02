@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nome do aplicativo -->
+    <string name="app_name">Manifeste</string>
+
+    <!-- Coisas sem sentido -->
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Configurações</string>
+    <string name="novaOcorrencia">Nova Ocorrencia</string>
+    <string name="novaFoto">Tirar Foto</string>
+    <string name="cadastrar">OK</string>
+
+    <!-- Ocorrências -->
+    <string-array name="problemas">
+        <item>Infra-estrutura</item>
+        <item>Saneamento</item>
+        <item>Poluição visual</item>
+        <item>Poluição sonora</item>
+        <item>Alagamento</item>
+        <item>Acumulo de lixo</item>
+    </string-array>
+
+    <!-- Nome das telas -->
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main">Manifeste</string>
+    <string name="title_activity_cadastro">Nova Ocorrencia</string>
+    <string name="title_activity_login">Manifeste</string>
+    <string name="title_activity_settings">Configurações</string>
+    <string name="title_activity_ocorrencia">Suas Ocorrências</string>
+
+</resources>
