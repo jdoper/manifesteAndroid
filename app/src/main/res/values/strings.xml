@@ -6,6 +6,7 @@
     <!-- Coisas sem sentido -->
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Configurações</string>
+    <string name="action_logout">Sair</string>
     <string name="novaOcorrencia">Nova Ocorrencia</string>
     <string name="novaFoto">Tirar Foto</string>
     <string name="cadastrar">OK</string>

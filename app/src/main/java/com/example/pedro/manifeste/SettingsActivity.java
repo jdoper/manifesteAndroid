@@ -2,91 +2,43 @@ package com.example.pedro.manifeste;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.HttpStack;
-import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class SettingsActivity extends ActionBarActivity {
     private TextView textView;
     private TextView textView2;
     private Map<String, String> params;
-    private int count;
-    // private String url;
     private RequestQueue rq;
-    // private HttpStack httpStack;
-    private String cookie;
+    private String token;
 
-    /*
-    Map<String, String> createBasicAuthHeader(String email, String senha) {
-        Map<String, String> headerMap = new HashMap<String, String>();
 
-        String credentials = email + ":" + senha;
-        String base64EncodedCredentials =
-                Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-        headerMap.put("Authorization", "Basic " + base64EncodedCredentials);
-
-        return headerMap;
+    public void buttonSend(View view) {
+        testRequest2(null);
     }
-    */
-
-
-    public void callByStringRequest(View view){
-        /*
-        params = new HashMap<String, String>();
-        params.put("email", "danielbastos@live.com");
-        params.put("senha", "123");
-
-
-        com.example.pedro.manifeste.StringRequest request = new com.example.pedro.manifeste.StringRequest(
-                Request.Method.POST,
-                "http://10.4.5.4:4000/auth/login",
-                params,
-                new Response.Listener<String>(){
-                    @Override
-                    public void onResponse(String response) {
-                        textView.setText(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        textView.setText(error.toString());
-                        Log.i("Script", error.toString());
-                    }
-                }
-        );
-        */
+    /*
+    public void loginRequest(View view){
         StringRequest request = new StringRequest(Request.Method.POST,
-                "http://10.4.5.4:4000/auth/login",
+                "http://10.4.5.4:8080/auth/login",
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {
@@ -145,114 +97,77 @@ public class SettingsActivity extends ActionBarActivity {
 
         request.setTag("tag");
         rq.add(request);
-
         newObject(null);
     }
 
     public void newObject(View view) {
-        /*
-        params = new HashMap<String, String>();
-        params.put("titulo", "Minha terceira ocorrência");
-        params.put("descricao", "Ocorrência #2");
-        params.put("longitude", "89.0");
-        params.put("latitude", "27.5");
-        params.put("categoria", "54edc6c5efee74d41605cae5");
-
-        com.example.pedro.manifeste.StringRequest request = new com.example.pedro.manifeste.StringRequest(
-                Request.Method.POST,
-                "http://10.4.5.4:4000/ocorrencias",
-                params,
+        StringRequest request = new StringRequest(Request.Method.POST,
+                "http://10.4.5.4:8080/ocorrencias",
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {
-                        textView.setText(response);
+                        textView2.setText(response);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        textView.setText(error.toString());
+                        textView2.setText(error.toString());
                         Log.i("Script", error.toString());
                     }
-                }
-        );
-        */
+                }){
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                params = new HashMap<String, String>();
+                params.put("titulo", "Minha terceira ocorrência");
+                params.put("descricao", "Ocorrência #2");
+                params.put("longitude", "89.0");
+                params.put("latitude", "27.5");
+                params.put("categoria", "54edc6c5efee74d41605cae5");
+                return(params);
+            }
 
-        Toast.makeText(this, cookie, Toast.LENGTH_LONG).show();
-
-            StringRequest request = new StringRequest(Request.Method.POST,
-                    "http://10.4.5.4:4000/ocorrencias",
-                    new Response.Listener<String>(){
-                        @Override
-                        public void onResponse(String response) {
-                            textView2.setText(response);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            textView2.setText(error.toString());
-                            Log.i("Script", error.toString());
-                        }
-                    }){
-                @Override
-                public Map<String, String> getParams() throws AuthFailureError {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = super.getHeaders();
+                if(params == null || params.equals(Collections.emptyMap())) {
                     params = new HashMap<String, String>();
-                    params.put("titulo", "Minha terceira ocorrência");
-                    params.put("descricao", "Ocorrência #2");
-                    params.put("longitude", "89.0");
-                    params.put("latitude", "27.5");
-                    params.put("categoria", "54edc6c5efee74d41605cae5");
-                    return(params);
                 }
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = super.getHeaders();
-                    if(params == null || params.equals(Collections.emptyMap())) {
-                        params = new HashMap<String, String>();
-                    }
-                    params.put("Cookie", "connect.sid=" + cookie + ";");
-                    return params;
-                }
-            };
-            request.setTag("tag");
+                params.put("this_is_manifeste!", "connect.sid=" + cookie + ";");
+                return params;
+            }
+        };
+        request.setTag("tag");
         rq.add(request);
     }
+    */
 
-
-
-
-
-
-
-
-
-    public void testRespond() {
+    /*
+    public void testRespond(View view) {
         JsonArrayRequest request = new JsonArrayRequest(
-            "http://arcane-spire-3519.herokuapp.com/api/v1/employee_data.json",
+            "http://10.4.5.4:3000/ocorrencias",
             new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
                     try {
                         String jsonResponse = "";
                         for (int i = 0; i < response.length(); i++) {
+                            JSONObject person = response.getJSONObject(i);
 
-                            JSONObject person = (JSONObject) response.get(i);
+                            String titulo = person.getString("titulo");
+                            JSONObject coordenada = response.getJSONObject(phone);
+                            coordenada.get
 
-                            String name = person.getString("name");
-                            String adress = person.getString("adress");
-                            String age = person.getString("age");
 
                             jsonResponse += "Name: " + name + "\n\n";
-                            jsonResponse += "Adress: " + adress + "\n\n";
+                            jsonResponse += "Address: " + adress + "\n\n";
                             jsonResponse += "Age: " + age + "\n\n\n";
-
+                            //jsonResponse += "Name: " + name + "\n\n\n";
                         }
                         textView.setText(jsonResponse);
 
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        textView.setText("Ok");
                         Toast.makeText(getApplicationContext(),
                                 "Error: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -268,18 +183,70 @@ public class SettingsActivity extends ActionBarActivity {
         );
         rq.add(request);
     }
+    */
 
+    public void testRequest(View view) {
+        StringRequest request = new StringRequest(Request.Method.POST,
+                "http://192.168.0.14:3000/api/v1/auth/login",
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        //String[] resposta;
+                        //resposta = response.split(":");
+                        //token = resposta[0];
+                        token = response;
+                        textView.setText(token);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        textView.setText(error.toString());
+                        Log.i("Script", error.toString());
+                    }
+                }){
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                params = new HashMap<String, String>();
+                params.put("login", "e@e.com");
+                params.put("password", "123123123");
+                return(params);
+            }
+        };
 
-    public void mais(View view) {
-        if(count < 10) {
-            textView.setText(""+ ++count + "");
-        }
+        request.setTag("tag");
+        rq.add(request);
     }
 
-    public void menos(View view) {
-        if(count > 1) {
-            textView.setText(""+ --count + "");
-        }
+    public void testRequest2(View view) {
+        StringRequest request = new StringRequest(Request.Method.POST,
+                "http://192.168.0.14:3000/api/v1/ocorrencia_data.json",
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        textView.setText("FUDEROSO!!!");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        textView.setText(error.toString());
+                        Log.i("Script", error.toString());
+                    }
+                }){
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                params = new HashMap<String, String>();
+                params.put("latitude", "66.6");
+                params.put("longitude", "66.6");
+                params.put("categoria", "Poluição sonora");
+                params.put("token", token);
+                return(params);
+            }
+        };
+
+        request.setTag("tag");
+        rq.add(request);
     }
 
     @Override
@@ -287,24 +254,12 @@ public class SettingsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        /*
-        // Configurações de requisição
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        CookieStore cookieStore = new BasicCookieStore();
-        httpClient.setCookieStore(cookieStore);
-        httpStack = new HttpClientStack(httpClient);
-
-        // Mostra resultado da requisição
-        rq = Volley.newRequestQueue(this, httpStack);
-        // rq.start();
-        */
-
         rq = Volley.newRequestQueue(this);
         textView = (TextView) findViewById(R.id.test);
         textView2 = (TextView) findViewById(R.id.test2);
-        testRespond();
-        // callByStringRequest(null);
-        // newObject(null);
+        testRequest(null);
+        //testRespond(null);
+        //loginRequest(null);
     }
 
     @Override

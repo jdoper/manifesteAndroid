@@ -104,7 +104,6 @@ public class MainActivity extends ActionBarActivity {
         startActivity(new Intent(this, OcorrenciaActivity.class));
     }
 
-
     /*
     * Calculos de distancia, para IoT
     * */
@@ -132,15 +131,20 @@ public class MainActivity extends ActionBarActivity {
     * Mapa da página principal
     * */
     public void addMarker(View view) {
-        // Envia dados para criar ocorrência
-        Intent intent = new Intent(this, CadastroActivity.class);
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            // Envia dados para criar ocorrência
+            Intent intent = new Intent(this, CadastroActivity.class);
 
-        Bundle bundle = new Bundle();
-        bundle.putDouble("latitude", latitude);
-        bundle.putDouble("longitude", longitude);
-        intent.putExtras(bundle);
+            Bundle bundle = new Bundle();
+            bundle.putFloat("latitude", (float) latitude);
+            bundle.putFloat("longitude", (float) longitude);
+            intent.putExtras(bundle);
 
-        startActivity(intent);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Habilite a localização do seu celular", Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void setMarkers() {
@@ -170,7 +174,6 @@ public class MainActivity extends ActionBarActivity {
             latitude = -5.799999;
             longitude = -35.239999;
             zoomCam = 12;
-            Toast.makeText(getApplicationContext(), "Ative a localização do seu celuar", Toast.LENGTH_LONG).show();
         }
 
         // LatLng latLng = new LatLng(-5.809999, -35.225421); Zoom: 12
@@ -281,6 +284,12 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+        }
+        else if (id == R.id.action_logout) {
+            // Retira usuário do banco e finaliza activity
+            Usuario.deleteAll(Usuario.class);
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

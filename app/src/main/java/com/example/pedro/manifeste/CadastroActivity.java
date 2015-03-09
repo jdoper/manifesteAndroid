@@ -1,5 +1,6 @@
 package com.example.pedro.manifeste;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -7,26 +8,90 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class CadastroActivity extends ActionBarActivity {
-    private double latitude, longitude;
-    private byte[] foto;
+    private float latitude, longitude;
+    private String tipo, token;
+    private Map<String, String> params;
+    private RequestQueue rq;
+    private boolean result;
+
+    public void createOcorrencia(View view) {
+        final ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Criando...");
+        pDialog.show();
+
+        StringRequest request = new StringRequest(Request.Method.POST,
+                "https://manifesteapp.herokuapp.com/api/v1/ocorrencia_data.json",
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        pDialog.hide();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        pDialog.hide();
+                        mensagemErro();
+                    }
+                }){
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                params = new HashMap<String, String>();
+                params.put("latitude", "" + latitude);
+                params.put("longitude", "" + longitude);
+                params.put("categoria", tipo);
+                params.put("token", token);
+                return(params);
+            }
+        };
+
+        request.setTag("tag");
+        rq.add(request);
+    }
+
+    public void mensagemErro() {
+        // Printa mensagens de erro das requisições
+        Toast.makeText(this, "Habilite a internet do seu aparelho", Toast.LENGTH_SHORT).show();
+    }
 
     public void cadastrarProblema(View view) {
+        // Criando ocorrencia e finalizando activity
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
 
-        Ocorrencia ocorrencia = new Ocorrencia(latitude, longitude, spinner.getSelectedItem().toString());
+        // Dados inseridos e identificaçao do usuario
+        tipo = spinner.getSelectedItem().toString();
+        List<Usuario> user = Usuario.listAll(Usuario.class);
+        token = user.get(0).getToken();
+
+        Ocorrencia ocorrencia = new Ocorrencia(latitude, longitude, tipo);
         ocorrencia.save();
 
+        // Enviando ocorrencia e finalizando activity
+        createOcorrencia(null);
         finish();
     }
 
@@ -47,7 +112,6 @@ public class CadastroActivity extends ActionBarActivity {
             Bundle bundle = data.getExtras();
             if(bundle != null) {
                 Bitmap image = (Bitmap) bundle.get("data");
-                foto = getBitmapAsByteArray(image);
                 ImageView imageView = (ImageView) findViewById(R.id.image);
                 imageView.setImageBitmap(image);
             }
@@ -61,16 +125,21 @@ public class CadastroActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        latitude = bundle.getDouble("latitude");
-        longitude = bundle.getDouble("longitude");
+        latitude = bundle.getFloat("latitude");
+        longitude = bundle.getFloat("longitude");
 
+        // Alterando cor da ActionBar
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#69A84F")));
 
+        // Configuração do Spinner
         Spinner estados = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
                 R.array.problemas, android.R.layout.simple_spinner_dropdown_item);
         estados.setAdapter(adapter1);
+
+        // Objeto para requisição
+        rq = Volley.newRequestQueue(this);
     }
 
 
