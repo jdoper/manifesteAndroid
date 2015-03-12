@@ -9,13 +9,18 @@ public class Usuario extends SugarRecord<Usuario> {
     private String login;
     private String senha;
     private String token;
+    private double latitude;
+
+    private double longitude;
 
     public Usuario() {}
 
-    public Usuario(String login, String senha, String token) {
+    public Usuario(String login, String senha, String token, double latitude, double longitude) {
         this.login = login;
         this.senha = senha;
         this.token = token;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getLogin() {
@@ -40,5 +45,21 @@ public class Usuario extends SugarRecord<Usuario> {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }

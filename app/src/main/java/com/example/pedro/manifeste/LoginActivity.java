@@ -57,7 +57,7 @@ public class LoginActivity extends ActionBarActivity {
                         Usuario user = new Usuario(
                             login.getText().toString(),
                             senha.getText().toString(),
-                            token
+                            token, 0, 0
                         );
                         user.save();
 
@@ -150,10 +150,13 @@ public class LoginActivity extends ActionBarActivity {
         login = (EditText) findViewById(R.id.login);
         senha = (EditText) findViewById(R.id.senha);
 
+        // Facilitando a inserção de dados para login
         List<Usuario> user = Usuario.listAll(Usuario.class);
-        Usuario userAtual = user.get(0);
-        login.setText(userAtual.getLogin());
-        senha.setText(userAtual.getSenha());
+        if (user.size() > 0) {
+            Usuario userAtual = user.get(0);
+            login.setText(userAtual.getLogin());
+            senha.setText(userAtual.getSenha());
+        }
     }
 
     @Override

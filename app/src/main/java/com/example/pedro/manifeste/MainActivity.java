@@ -12,6 +12,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +27,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,9 +46,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +71,9 @@ public class MainActivity extends ActionBarActivity {
     private TimerTask task;
     private final Handler handler = new Handler();
     private int zoomCam;
+    private double latitudeAnterior, longitudeAnterior;
+    private Usuario userAtual;
+    private RequestQueue rq;
 
     /*
     * Notificação
@@ -69,7 +89,104 @@ public class MainActivity extends ActionBarActivity {
                 });
             }};
 
-        timerAtual.schedule(task, 5000);
+        timerAtual.schedule(task, 5000, 900000);
+    }
+
+    private boolean isOnline() {
+        // Verifica se o usuário está online
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void verificaLocalizacao() {
+        // IoT
+        if (latitude == -5.799999 && longitude == -35.239999) {
+            userAtual.setLatitude(latitude);
+            userAtual.setLongitude(longitude);
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                getLocation();
+                long distancia = calcDistance(
+                        userAtual.getLatitude(),
+                        userAtual.getLongitude(),
+                        latitude,
+                        longitude
+                );
+                if (distancia > 2000) {
+                    userAtual.setLatitude(latitude);
+                    userAtual.setLongitude(longitude);
+                    getOcorrencias();
+                    gerarNotificacao();
+                }
+            }
+        }
+    }
+
+    public void getOcorrencias() {
+        final String token = userAtual.getToken();
+        final double paramLatitude = latitude;
+        final double paramLongitude = longitude;
+        JsonArrayRequest request = new JsonArrayRequest(
+                "http://manifesteapp.herokuapp.com/api/v1/ocorrencia.json",
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject person = (JSONObject) response.get(i);
+                                Ocorrencia ocorrencia = new Ocorrencia(
+                                    person.getDouble("latitude"),
+                                    person.getDouble("longitude"),
+                                    person.getString("categoria")
+                                );
+                                ocorrencia.save();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            mensagemErro2();
+                        }
+                        mensagemErro1();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        mensagemErro3(error.getMessage());
+                    }
+                }){
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("token", token);
+                params.put("latitude", "-5.78");
+                params.put("longitude", "-35.24");
+                return(params);
+            }
+        };
+
+        request.setTag("tag");
+        rq.add(request);
+    }
+
+    public void mensagemErro1() {
+        List<Ocorrencia> ocorrencias = Ocorrencia.listAll(Ocorrencia.class);
+        // Printa mensagens de erro das requisições
+        Toast.makeText(this, "Size: " + ocorrencias.size(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void mensagemErro2() {
+        List<Ocorrencia> ocorrencias = Ocorrencia.listAll(Ocorrencia.class);
+        // Printa mensagens de erro das requisições
+        Toast.makeText(this, "Não fez o parse do JSONArray", Toast.LENGTH_SHORT).show();
+    }
+
+    public void mensagemErro3(String erro) {
+        // Printa mensagens de erro das requisições
+        Toast.makeText(this, erro, Toast.LENGTH_SHORT).show();
     }
 
     public void gerarNotificacao() {
@@ -107,11 +224,12 @@ public class MainActivity extends ActionBarActivity {
     /*
     * Calculos de distancia, para IoT
     * */
-    public double convertCoord(float pos) {
+    public double convertCoord(double pos) {
         return (pos * Math.PI)/180;
     }
 
-    public long calcDistance(float latA, float lonA, float latB, float lonB) {
+    public long calcDistance(double latA, double lonA, double latB, double lonB) {
+        // Calcula a distancia entre duas coordenadas
         double raio = 6372.7954;
         double lnA = convertCoord(lonA);
         double ltA = convertCoord(latA);
@@ -120,8 +238,8 @@ public class MainActivity extends ActionBarActivity {
 
         double result = 1000 * raio * Math.acos(
                 Math.sin(ltA) * Math.sin(ltB) +
-                        Math.cos(ltA) * Math.cos(ltB) *
-                                Math.cos(lnA - lnB));
+                Math.cos(ltA) * Math.cos(ltB) *
+                Math.cos(lnA - lnB));
 
         return Math.round(result);
     }
@@ -223,8 +341,11 @@ public class MainActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#69A84F")));
 
+        rq = Volley.newRequestQueue(this);
+
         // Pegando localização do usuário
         latitude = 0; longitude = 0; zoomCam = 15;
+        latitudeAnterior = 0; longitude = 0;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = getLocation();
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
@@ -239,8 +360,16 @@ public class MainActivity extends ActionBarActivity {
         fragment.replace(R.id.mapContainer, mapFragment);
         fragment.commit();
 
+        // Facilitando a inserção de dados para login
+        List<Usuario> user = Usuario.listAll(Usuario.class);
+        if (user.size() > 0) {
+            userAtual = user.get(0);
+        }
+
+        // getOcorrencias();
+
         // Chama notificação para usuário
-        ativaNotificacao();
+        // ativaNotificacao();
     }
 
     @Override
@@ -261,6 +390,7 @@ public class MainActivity extends ActionBarActivity {
                         getLocation();
                         configMap();
                         setMarkers();
+                        verificaLocalizacao();
                     }
                 });
             }
