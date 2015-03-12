@@ -62,8 +62,8 @@ public class LoginActivity extends ActionBarActivity {
                         user.save();
 
                         // Finaliza a activity
-                        pDialog.hide();
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        pDialog.hide();
                         finish();
                     }
                 },
@@ -149,6 +149,11 @@ public class LoginActivity extends ActionBarActivity {
         // Referencia para os campos do formulário
         login = (EditText) findViewById(R.id.login);
         senha = (EditText) findViewById(R.id.senha);
+
+        List<Usuario> user = Usuario.listAll(Usuario.class);
+        Usuario userAtual = user.get(0);
+        login.setText(userAtual.getLogin());
+        senha.setText(userAtual.getSenha());
     }
 
     @Override

@@ -44,7 +44,7 @@ public class CadastroActivity extends ActionBarActivity {
         pDialog.show();
 
         StringRequest request = new StringRequest(Request.Method.POST,
-                "https://manifesteapp.herokuapp.com/api/v1/ocorrencia_data.json",
+                "https://manifesteapp.herokuapp.com/api/v1/ocorrencia.json",
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {

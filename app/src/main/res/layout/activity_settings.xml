@@ -6,84 +6,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.pedro.manifeste.SettingsActivity"
     android:id="@+id/settings">
-<!--
-    <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificações no celular"
-        android:id="@+id/switch1"
-        android:padding="15dp"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notificações no Facebook"
-        android:padding="15dp"
-        android:paddingTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/switch2"
-        android:layout_below="@+id/switch1"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Raio de busca"
-        android:textSize="16dp"
-        android:padding="15dp"
-        android:paddingTop="5dp"
-        android:textColor="#000000"
-        android:id="@+id/textView"
-        android:layout_below="@+id/switch2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/switch2"
-        android:id="@+id/relativeLayout">
-
-    </RelativeLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-"
-        android:id="@+id/button3"
-        android:padding="15dp"
-        android:onClick="menos"
-        android:layout_alignTop="@+id/button2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:textSize="28dp"
-        android:text="1"
-        android:gravity="center"
-        android:background="@drawable/spinner_custom"
-        android:id="@+id/indicator"
-        android:layout_below="@+id/relativeLayout"
-        android:layout_toLeftOf="@+id/button3"
-        android:layout_toStartOf="@+id/button3" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="+"
-        android:id="@+id/button2"
-        android:padding="15dp"
-        android:onClick="mais"
-        android:layout_alignBottom="@+id/textView"
-        android:layout_toLeftOf="@+id/indicator"
-        android:layout_toStartOf="@+id/indicator" />
--->
 
     <ScrollView
         android:id="@+id/container"
@@ -127,6 +50,14 @@
             android:id="@+id/button2"
             android:layout_gravity="center_horizontal"
             android:onClick="buttonSend"/>
+
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="1500dp"
+            android:id="@+id/listView"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp" />
 
     </LinearLayout>
     </ScrollView>
