@@ -44,12 +44,12 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void login(View view) {
-        final ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Carregando...");
-        pDialog.show();
+        //final ProgressDialog pDialog = new ProgressDialog(this);
+        //pDialog.setMessage("Carregando...");
+        //pDialog.show();
 
         StringRequest request = new StringRequest(Request.Method.POST,
-                "https://manifesteapp.herokuapp.com/api/v1/auth/login",
+                "http://192.168.0.14:3000/api/v1/auth/login",
                 new Response.Listener<String>(){
                     @Override
                     public void onResponse(String response) {
@@ -63,14 +63,14 @@ public class LoginActivity extends ActionBarActivity {
 
                         // Finaliza a activity
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        pDialog.hide();
+                        //pDialog.hide();
                         finish();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        pDialog.hide();
+                        //pDialog.hide();
                         mensagemErro();
                     }
                 }){
@@ -90,14 +90,14 @@ public class LoginActivity extends ActionBarActivity {
     private void verifyLogin() {
         // Caso o usuário já tenha se cadastrado, entra-se diretamente
         List<Usuario> user = Usuario.listAll(Usuario.class);
-        final ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Carregando...");
-        pDialog.show();
+        //final ProgressDialog pDialog = new ProgressDialog(this);
+        //pDialog.setMessage("Carregando...");
+        // pDialog.show();
 
         if (user.size() > 0) {
             final Usuario userAtual = user.get(0);
             StringRequest request = new StringRequest(Request.Method.POST,
-                    "https://manifesteapp.herokuapp.com/api/v1/auth/login",
+                    "http://192.168.0.14:3000/api/v1/auth/login",
                     new Response.Listener<String>(){
                         @Override
                         public void onResponse(String response) {
@@ -106,7 +106,7 @@ public class LoginActivity extends ActionBarActivity {
                             userAtual.save();
 
                             // Finaliza a activity
-                            pDialog.hide();
+                            //pDialog.hide();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             finish();
                         }
@@ -114,7 +114,7 @@ public class LoginActivity extends ActionBarActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            pDialog.hide();
+                            //pDialog.hide();
                             mensagemErro();
                         }
                     }){
@@ -131,7 +131,7 @@ public class LoginActivity extends ActionBarActivity {
             rq.add(request);
         }
         else {
-            pDialog.hide();
+            //pDialog.hide();
         }
     }
 
@@ -164,7 +164,8 @@ public class LoginActivity extends ActionBarActivity {
         super.onResume();
 
         // Caso exista um usuário cadastrado, entra-se no sistema
-        verifyLogin();
+        // Chamar login passando parametro nulo
+        //verifyLogin();
     }
 
     @Override

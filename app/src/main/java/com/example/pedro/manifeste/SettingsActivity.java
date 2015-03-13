@@ -35,6 +35,9 @@ public class SettingsActivity extends ActionBarActivity {
     private RequestQueue rq;
     private String token;
 
+    /*
+    * Arquivo de teste, nenhuma implementação importante foi feita aqui
+    * */
 
     public void buttonSend(View view) {
         testRequest2(null);

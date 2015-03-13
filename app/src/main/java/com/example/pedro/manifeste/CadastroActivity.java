@@ -38,7 +38,13 @@ public class CadastroActivity extends ActionBarActivity {
     private RequestQueue rq;
     private boolean result;
 
+    /*
+    * Activity responsável por criar ocorrências
+    * e envia-lás a aplicação web
+    * */
+
     public void createOcorrencia(View view) {
+        // Envia a ocorrência para a Aplicação Web
         final ProgressDialog pDialog = new ProgressDialog(this);
         pDialog.setMessage("Criando...");
         pDialog.show();
@@ -96,6 +102,7 @@ public class CadastroActivity extends ActionBarActivity {
     }
 
     public void tirarFoto(View view) {
+        // Possibilita o usuário tirar foto
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         startActivityForResult(intent, 1);
     }
@@ -108,6 +115,7 @@ public class CadastroActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // O retorno da imagem tirada é apresentada na activity
         if(data != null) {
             Bundle bundle = data.getExtras();
             if(bundle != null) {
@@ -123,6 +131,7 @@ public class CadastroActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
 
+        // Recebe valores passados
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         latitude = bundle.getFloat("latitude");
