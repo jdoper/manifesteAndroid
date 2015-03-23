@@ -59,8 +59,8 @@ public class MainActivity extends ActionBarActivity {
     private GoogleMap map;
     private LocationManager locationManager;
     private float latitude, longitude;
-    //private Timer timerAtual = new Timer();
-    //private final Handler handler = new Handler();
+    private Timer timerAtual = new Timer();
+    private final Handler handler = new Handler();
     private int zoomCam;
     private Usuario userAtual;
     private RequestQueue rq;
@@ -68,7 +68,6 @@ public class MainActivity extends ActionBarActivity {
     /*
     * IOT (ativação do mecanismo)
     * */
-    /*
     private void ativaNotificacao(){
         // Notifica o usuário
         TimerTask task = new TimerTask() {
@@ -83,7 +82,6 @@ public class MainActivity extends ActionBarActivity {
 
         timerAtual.schedule(task, 5000, 900000);
     }
-    */
 
     /*
     * IOT (funções auxiliares)
@@ -149,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
     * */
     public void getOcorrencias() {
         JsonArrayRequest request = new JsonArrayRequest(
-            "http://192.168.0.14:3000/api/v1/listar.json",
+            "http://manifesteapp.herokuapp.com/api/v1/listar.json",
             new Response.Listener<JSONArray>(){
                 @Override
                 public void onResponse(JSONArray response) {
@@ -368,6 +366,9 @@ public class MainActivity extends ActionBarActivity {
 
         // Recuperando ocorrências do usuário
         getOcorrencias();
+
+        // Notifica
+        ativaNotificacao();
     }
 
     @Override
